@@ -293,7 +293,7 @@ def reEnableUserPage(params) {
 }
 
 def getUser(params) {
-  def i = 1
+  def i = 0
   // Assign params to i.  Sometimes parameters are double nested.
   if (params.number) {
     i = params.number
@@ -338,6 +338,7 @@ def infoPage() {
         def i = 0
         theLocks.each { lock->
           href(name: "toLockInfoPage${i}", page: "lockInfoPage", params: [id: lock.id], required: false, title: lock.displayName )
+	  i++
         }
       }
     }
@@ -366,6 +367,7 @@ def lockInfoPage(params) {
           state."lock${lock.id}".codes.each { code->
             pass = state."lock${lock.id}".codes."slot${i}"
             paragraph "Slot ${i}\nCode: ${pass}"
+	    i++
           }
         } else {
           paragraph "No Lock data received yet.  Requires custom device driver.  Will be populated on next poll event."
@@ -457,6 +459,7 @@ def isUnique(newInt, oldInt) {
     if (i <= oldInt.length()) {
       newArray << normalizeNumber(it.toInteger())
     }
+    i++
   }
 
   i = 0
@@ -464,6 +467,7 @@ def isUnique(newInt, oldInt) {
     if (i <= oldInt.length()) {
       oldArray << normalizeNumber(it.toInteger())
     }
+    i++
   }
 
   i = 0
@@ -472,6 +476,7 @@ def isUnique(newInt, oldInt) {
       // The normalized numbers are the same!
       result = false
     }
+    i++
   }
   return result
 }
@@ -1310,6 +1315,7 @@ def allCodesDone() {
     if (state."lock${lock.id}".error_loop == true) {
       codeComplete = false
     }
+    i++
   }
   return codeComplete
 }
