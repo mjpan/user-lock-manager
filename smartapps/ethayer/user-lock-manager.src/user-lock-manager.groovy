@@ -68,7 +68,7 @@ def setupPage() {
   dynamicPage(name:"setupPage", title:"User Settings") {
     if (maxUsers > 0) {
       section('Users') {
-        (1..maxUsers).each { user->
+        (0..maxUsers-1).each { user->
           if (!state."userState${user}") {
             //there's no values, so reset
             resetCodeUsage(user)
@@ -337,7 +337,6 @@ def infoPage() {
       if (theLocks) {
         def i = 0
         theLocks.each { lock->
-          i++
           href(name: "toLockInfoPage${i}", page: "lockInfoPage", params: [id: lock.id], required: false, title: lock.displayName )
         }
       }
@@ -365,7 +364,6 @@ def lockInfoPage(params) {
           def i = 0
           def pass = ''
           state."lock${lock.id}".codes.each { code->
-            i++
             pass = state."lock${lock.id}".codes."slot${i}"
             paragraph "Slot ${i}\nCode: ${pass}"
           }
@@ -456,7 +454,6 @@ def isUnique(newInt, oldInt) {
   def i = 0
   // Get a normalized sequence, at the same length
   newInt.toString().toList().collect {
-    i++
     if (i <= oldInt.length()) {
       newArray << normalizeNumber(it.toInteger())
     }
@@ -464,7 +461,6 @@ def isUnique(newInt, oldInt) {
 
   i = 0
   oldInt.toString().toList().collect {
-    i++
     if (i <= oldInt.length()) {
       oldArray << normalizeNumber(it.toInteger())
     }
@@ -472,7 +468,6 @@ def isUnique(newInt, oldInt) {
 
   i = 0
   newArray.each { num->
-    i++
     if (newArray.join() == oldArray.join()) {
       // The normalized numbers are the same!
       result = false
@@ -507,7 +502,7 @@ def normalizeNumber(number) {
 
 def setupPageDescription(){
   def parts = []
-  for (int i = 1; i <= settings.maxUsers; i++) {
+  for (int i = 0; i < settings.maxUsers; i++) {
     parts << settings."userName${i}"
   }
   return fancyString(parts)
@@ -738,7 +733,7 @@ private initialize() {
 }
 
 def resetAllCodeUsage() {
-  for (int i = 1; i <= settings.maxUsers; i++) {
+  for (int i = 0; i < settings.maxUsers; i++) {
     lockErrorLoopReset()
     resetCodeUsage(i)
   }
@@ -991,7 +986,7 @@ def isCorrectDay() {
 
 def userSlotArray() {
   def array = []
-  for (int i = 1; i <= settings.maxUsers; i++) {
+  for (int i = 0; i < settings.maxUsers; i++) {
     if (settings."userSlot${i}") {
       array << settings."userSlot${i}".toInteger()
     }
@@ -1001,7 +996,7 @@ def userSlotArray() {
 
 def enabledUsersArray() {
   def array = []
-  for (int i = 1; i <= settings.maxUsers; i++) {
+  for (int i = 0; i < settings.maxUsers; i++) {
     if (userIsEnabled(i)) {
       array << i
     }
@@ -1010,7 +1005,7 @@ def enabledUsersArray() {
 }
 def enabledUsersSlotArray() {
   def array = []
-  for (int i = 1; i <= settings.maxUsers; i++) {
+  for (int i = 0; i < settings.maxUsers; i++) {
     if (userIsEnabled(i)) {
       def userSlot = settings."userSlot${i}"
       array << userSlot.toInteger()
@@ -1021,7 +1016,7 @@ def enabledUsersSlotArray() {
 
 def disabledUsersSlotArray() {
   def array = []
-  for (int i = 1; i <= settings.maxUsers; i++) {
+  for (int i = 0; i < settings.maxUsers; i++) {
     if (!userIsEnabled(i)) {
       if (settings."userSlot${i}") {
         array << settings."userSlot${i}".toInteger()
@@ -1059,7 +1054,7 @@ def codereturn(evt) {
 }
 
 def usedUserIndex(usedSlot) {
-  for (int i = 1; i <= settings.maxUsers; i++) {
+  for (int i = 0; i < settings.maxUsers; i++) {
     if (settings."userSlot${i}" && settings."userSlot${i}".toInteger() == usedSlot.toInteger()) {
       return i
     }
@@ -1239,7 +1234,7 @@ def pollCodeReport(evt) {
 
   def array = []
 
-  (1..maxUsers).each { user->
+  (0..maxUsers-1).each { user->
     def slot = settings."userSlot${user}"
     def code = codeData."code${slot}"
     def correctCode = settings."userCode${user}"
@@ -1312,7 +1307,6 @@ def allCodesDone() {
   def i = 0
   def codeComplete = true
   theLocks.each { lock->
-    i++
     if (state."lock${lock.id}".error_loop == true) {
       codeComplete = false
     }
@@ -1437,9 +1431,9 @@ def codeEntryHandler(evt) {
     return []
   }
 
-  def i = settings.maxUsers
+  def i = settings.maxUsers - 1
   def message = " "
-  while (i > 0) {
+  while (i >= 0) {
     log.debug "i =" + i
     def correctCode = settings."userCode${i}" as String
 
